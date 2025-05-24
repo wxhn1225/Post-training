@@ -9,3 +9,11 @@
 + B站、YouTube
 + https://www.interconnects.ai/
 + https://magazine.sebastianraschka.com/
+
+
+## Post-training History
+
+```mermaid
+graph LR
+    A(RLHF)-->B(???)
+```

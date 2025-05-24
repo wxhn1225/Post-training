@@ -7,6 +7,7 @@
 ## 资料途径
 + 百度、bing
 + B站、YouTube
+  + https://www.bilibili.com/video/BV1fJciefEq3
 + https://www.interconnects.ai/
 + https://magazine.sebastianraschka.com/
 

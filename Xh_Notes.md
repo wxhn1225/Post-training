@@ -18,3 +18,7 @@
 graph LR
     A(RLHF)-->B(???)
 ```
+
+## 当前问题
++ RL、RLHF、Post-training的关系
++ RLHF和具体算法（例如：PPO之类的）的关系

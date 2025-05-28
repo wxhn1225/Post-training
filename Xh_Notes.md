@@ -8,6 +8,8 @@
 + 百度、bing
 + B站、YouTube
   + https://www.bilibili.com/video/BV1fJciefEq3
++ GitHub
+  + https://github.com/mbzuai-oryx/Awesome-LLM-Post-training
 + https://www.interconnects.ai/
 + https://magazine.sebastianraschka.com/
 + 论坛
@@ -24,3 +26,6 @@ graph LR
 ## 当前问题
 + RL、RLHF、Post-training的关系
 + RLHF和具体算法（例如：PPO之类的）的关系
+
+
+## 参考论文

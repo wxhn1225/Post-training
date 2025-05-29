@@ -18,7 +18,7 @@
 
 了解*actors*推理成本、通信成本和学习成本非常重要。在某些情况下，这些成本允许*agent*进行同策略(**on-policy**)学习。由于不同*actors*可能以不同速度和时间收集数据，这个过程通常是异步的。
 
-如果数据收集速度不够快，*learner*可能需要从记忆中重放旧示例来更新*policy*。这就是异策略(**off-policy**)设置。在这种情况下，需要纠正模型使用陈旧数据学习的问题——还记得[4月24日推文](2025-04-24_RL vs SFT.md))中关于驾驶的例子吗？过度脱离*policy*可能很危险！幸运的是，我们稍后将看到研究人员已经有一些解决方案，例如重要性*weights*和其他加权机制，如在[近端策略优化(Proximal policy optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中出现的权重。
+如果数据收集速度不够快，*learner*可能需要从记忆中重放旧示例来更新*policy*。这就是异策略(**off-policy**)设置。在这种情况下，需要纠正模型使用陈旧数据学习的问题——还记得[4月24日推文](2025-04-24_RL%20vs%20SFT.md)中关于驾驶的例子吗？过度脱离*policy*可能很危险！幸运的是，我们稍后将看到研究人员已经有一些解决方案，例如重要性*weights*和其他加权机制，如在[近端策略优化(Proximal policy optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中出现的权重。
 
 最后，有时可以仅从大型回放数据库学习policy。这被称为离线RL(off-line RL)或批量RL(batch RL)。*Off-line RL*优于*supervised learning*，因为它包含前文讨论的*selection mechanisms*，但当然不如*on-line RL*，因为它缺乏在*environments*中直接生成*actions*的能力。然而，*off-line RL*非常有用，因为它允许在交互成本过高或危险的情况下进行学习。
 

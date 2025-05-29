@@ -4,7 +4,7 @@
 
 *Agent*是一种能够感知*environment*、自主采取行动(**actions**)以实现目标，并可通过*RL*或指导提升性能的实体。*Agent*可拥有内部目标（如推断出的子目标，以及对更多观察、学习或控制的追求——这正是我们需要考虑安全问题的地方！），也可拥有外部目标，这些外部目标既可通过奖励(**reward**)函数明确指定，也可通过反馈*reward*信号表达。下图展示了RL的主要组成部分。
 
-![RL ingredients.jpg](../src/RL ingredients.jpg)
+![RL ingredients.jpg](../src/RL%20ingredients.jpg)
 
 *Agent*可以是与用户（它的*environment*）交互的多模态神经网络，目标是通过个性化教育赋能用户。*Agent*观察越多，就越容易创建个性化课程来辅助用户。
 
@@ -12,7 +12,7 @@
 
 正如我的一些同事所讨论的（参见[《IMPALA: Scalable Distributed Deep-RL》](https://arxiv.org/abs/1802.01561)和[acme: A library of reinforcement learning](https://github.com/google-deepmind/acme)），现代*distributed RL systems*可分为两个组件：行动者(**Actors**)和学习者(**Learners**)。每个行动者通过一个称为策略(**policy**)的网络(**network**)与*environment*交互生成*actions*。*Actors* 还从*environment*中收集*rewards*和观察结果。收集的数据被添加到共享的回放记忆(**replay memory**)中。 *Learner*从*replay memory*中采样数据并用于更新*policy network*。更新*network*后，权重(**weight**)检查点需要发送给每个*actor*。设计此类系统时，衡量每项操作的持续时间、测量每个通信链路的带宽等至关重要。这需要精确的工程设计和全面的测量与消融研究。
 
-![modern distributed RL systems.jpg](../src/modern distributed RL systems.jpg)
+![modern distributed RL systems.jpg](../src/modern%20distributed%20RL%20systems.jpg)
 
 在语言领域，*actors*是聊天机器人*agents*，而*environments*则是人类。每次对话的数据随后被发送到*replay memory*中用于学习。通常，*learner*可能需要比*actors*更多的存储和计算资源，因为*learner*需要跟踪梯度(**gradients**)和其他大规模统计数据。
 

@@ -10,7 +10,7 @@
 
 工业级*LLMs*的*RL*可能涉及数百万次同步交互，使用数十亿参数模型和整个数据中心。这绝非廉价之举！构建在如此庞大规模下高效运行的RL系统(**RL system**)远非易事。在此，我仅提供对这类可扩展分布式系统(**scalable distributed system**)的浅层概述。向Anthropic、DeepMind、DeepSeek、Meta、微软AI、OpenAI、X等公司的杰出工程师们致敬！在我看来，他们就像英超联赛中最优秀的足球运动员一样独特且极具才华。
 
-正如我的一些同事所讨论的（参见[《IMPALA: Scalable Distributed Deep-RL》](https://arxiv.org/abs/1802.01561)和[acme: A library of reinforcement learning](https://github.com/google-deepmind/acme)），现代*distributed RL system*可分为两个组件：行动者(**Actor**)和学习者(**Learner**)。每个*actor*通过一个称为策略(**policy**)的网络(**network**)与*environment*交互生成*action*。*Actor* 还从*environment*中收集*reward*和观察结果。收集的数据被添加到共享的回放记忆(**replay memory**)中。 *Learner*从*replay memory*中采样数据并用于更新*policy network*。更新*network*后，权重(**weight**)检查点需要发送给每个*actor*。设计此类系统时，衡量每项操作的持续时间、测量每个通信链路的带宽等至关重要。这需要精确的工程设计和全面的测量与消融研究。
+正如我的一些同事所讨论的（参见[《IMPALA: Scalable Distributed Deep-RL》](https://arxiv.org/abs/1802.01561)和[acme: A library of reinforcement learning](https://github.com/google-deepmind/acme)），现代*distributed RL system*可分为两个组件：执行器(**Actor**)和学习器(**Learner**)。每个*actor*通过一个称为策略(**policy**)的网络(**network**)与*environment*交互生成*action*。*Actor* 还从*environment*中收集*reward*和观察结果。收集的数据被添加到共享的回放记忆(**replay memory**)中。 *Learner*从*replay memory*中采样数据并用于更新*policy network*。更新*network*后，权重(**weight**)检查点需要发送给每个*actor*。设计此类系统时，衡量每项操作的持续时间、测量每个通信链路的带宽等至关重要。这需要精确的工程设计和全面的测量与消融研究。
 
 ![modern distributed RL systems.jpg](../src/modern%20distributed%20RL%20systems.jpg)
 
@@ -18,7 +18,7 @@
 
 了解*actor*推理成本、通信成本和学习成本非常重要。在某些情况下，这些成本允许*agent*进行同策略(**on-policy**)学习。由于不同*actors*可能以不同速度和时间收集数据，这个过程通常是异步的。
 
-如果数据收集速度不够快，*learner*可能需要从记忆中重放旧示例来更新*policy*。这就是异策略(**off-policy**)设置。在这种情况下，需要纠正模型使用陈旧数据学习的问题——还记得[4月24日推文](2025-04-24_RL%20vs%20SFT.md)中关于驾驶的例子吗？过度脱离*policy*可能很危险！幸运的是，我们稍后将看到研究人员已经有一些解决方案，例如重要性*weight*和其他加权机制，如在[近端策略优化(Proximal policy optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中出现的权重。
+如果数据收集速度不够快，*learner*可能需要从记忆中重放旧示例来更新*policy*。这就是异策略(**off-policy**)设置。在这种情况下，需要纠正模型使用陈旧数据学习的问题——还记得[4月24日推文](2025-04-24_RL%20vs%20SFT.md)中关于驾驶的例子吗？过度脱离*policy*可能很危险！幸运的是，我们稍后将看到研究人员已经有一些解决方案，例如重要性*weight*和其他加权机制，如在[近端策略优化(Proximal Policy Optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中出现的权重。
 
 最后，有时可以仅从大型回放数据库学习policy。这被称为离线RL(off-line RL)或批量RL(batch RL)。*Off-line RL*优于*supervised learning*，因为它包含前文讨论的*selection mechanism*，但当然不如*on-line RL*，因为它缺乏在*environment*中直接生成*action*的能力。然而，*off-line RL*非常有用，因为它允许在交互成本过高或危险的情况下进行学习。
 

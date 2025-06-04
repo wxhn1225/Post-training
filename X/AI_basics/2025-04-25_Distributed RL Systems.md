@@ -1,6 +1,6 @@
 # Distributed RL Systems
 
-> 原帖: [AI basics April 25:  Distributed RL Systems](https://x.com/NandoDF/status/1915548697548464359)
+> 原帖: [April 25:  Distributed RL Systems](https://x.com/NandoDF/status/1915548697548464359)
 
 *Agent*是一种能够感知*environment*、自主采取行动(**action**)以实现目标，并可通过RL或指导提升性能的实体。*Agent*可拥有内部目标（如推断出的子目标，以及对更多观察、学习或控制的追求——这正是我们需要考虑安全问题的地方！），也可拥有外部目标，这些外部目标既可通过奖励(**reward**)函数明确指定，也可通过反馈*reward*信号表达。下图展示了RL的主要组成部分。
 

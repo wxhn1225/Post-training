@@ -1,0 +1,23 @@
+Many teams, including DeepSeek-R1, maximise the following one-step objective function when they say they are doing RL:
+The math symbols represent the following concepts:
+That is, we are fine-tuning the LLM over all data strings (a,o). I’m using the integral sign to denote very large discrete sums in the case of text.  Hence, if we had a dataset of N  pairs of observations and actions (o, a), we would evaluate the objective function in practice as follows:
+In practice too, the environment (user) will give us the observations (prompts or instructions o). So we don't need to know the distribution P(o). Since we don't know the optimal actions (LLM generations, aka actions a), we will integrate over them. This is the standard way of dealing with unknown quantities in probability. We sum over all their possible values weighted by the probability of occurrence. In this case, the probability over actions is what the LLM produces. The LLM is a probabilistic model. 
+This approach, of summing over the LLM outputs while maximising over the LLM weights, is know as maximum expected utility and it is the thing that rational agents in game theory do. By maximising the expected utility (another word for reward) one converges to a Nash equilibrium. In stats, people call this marginalisation, and when it also involves maximising over a quantity (e.g. the LLM weights theta in this case) is is known as experimental design. 
+In summary, in one-step RL, we  maximise the expected return R, i.e. single outcome reward R=r(a,o) in the case of most LLMs out there (see previous post), by tuning an LLM policy. 
+Policy Gradients 
+This is what people refer to as on-policy RL or Reinforce. This method is said to be on-policy because the policy (LLM model) that generates the samples (actions) is the same as the one being learned. 
+This approach makes sense when generating the samples is cheaper than learning. That is, when the learner can easily get fresh samples on demand. This may be the case sometimes, but it wasn't the case with expensive game simulation engines, where buffers and replay memories had to be introduced to cache data. The data would then go stale, necessitating off-policy methods, which we will discuss in the following section. For now, we will see how to calculate the gradient of our one-step loss. We will then simply follow the gradient to update the parameters.
+Let us derive the policy gradient with the one-step objective. The gradient is just a vector of derivatives with respect to each LLM parameters theta. In theory, it can be obtained as follows using calculus:
+Again, we are using the big R  to denote the return which in this case is the one-step outcome reward.
+If we generate (sample) a prompt o from the user, and sample a solution a using the LLM policy, which in math we represent as follows:
+we can approximate the policy gradient with Monte Carlo:
+Now that we have a gradient, we can simply follow the gradient to maximise the objective function. Tools like Jax and PyTorch enable us to implement this easily.
+Policy Gradients, SFT and Self-Training
+It is instructive to contrast the policy gradient of RL with the gradient of supervised fine tuning (maximum likelihood):
+As we can see, RL has the extra R^i term which scales the log loss. Also the labels come from the LLM model not from the human (or GPT4o) dataset. RL self-improves. R can be used to select only the best samples, so the model learns to imitate only the good samples. This is what I meant by the RL teacher marks the homework: it provides a score R which tells us what aspects are worth imitating, and what aspects are not worth imitating.
+Self-training approaches can combine supervised learning with a larger dataset labelled by the model. That is the third gradient above. Reinforced Self-Training (ReST) is a good example of this approach for LLMs. It can indeed be used for self-improvement,hile also staying close to human demonstrations. In ReST the reward is used to rank samples. Subsequently, ReST re-learns the policy using only the highest ranked samples.
+Policy Gradients in PyTorch
+In PyTorch, we often define a ``loss'' function like this:
+This is not the true loss in the usual supervised learning sense, but rather a surrogate whose gradients gives us the direction in which to update the policy parameters (the policy gradient).
+This involves the usual forward and backward pass using automatic differentiation as follows:
+Tomorrow we will see that we can solve the one-step objective function using maximum likelihood, i.e. without having to think about it as RL. However, the new interpretation will not buy us much. Basically you can have many interpretations, but the gradient ends up being the same. .... more or less.

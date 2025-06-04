@@ -1,6 +1,6 @@
 # The many types of RL for post-training LLMs
 
-> 原贴: [The many types of RL for post-training LLMs](https://x.com/NandoDF/status/1916835195992277281)
+> 原贴: [April 29: The many types of RL for post-training LLMs](https://x.com/NandoDF/status/1916835195992277281)
 
 RL有着多种形式和变体。正是这种多样性使得人们能在这个领域研究多年，并仍不时有新的惊喜。
 

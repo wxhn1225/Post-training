@@ -2,24 +2,28 @@
 
 > 原帖: [April 25:  Distributed RL Systems](https://x.com/NandoDF/status/1915548697548464359)
 
-*Agent*是一种能够感知*environment*、自主采取行动(**action**)以实现目标，并可通过RL或指导提升性能的实体。*Agent*可拥有内部目标（如推断出的子目标，以及对更多观察、学习或控制的追求——这正是我们需要考虑安全问题的地方！），也可拥有外部目标，这些外部目标既可通过奖励(**reward**)函数明确指定，也可通过反馈*reward*信号表达。下图展示了RL的主要组成部分。
+Agent是一种能够感知environment、自主采取行动**（Action）**以实现目标，并可通过RL或指导提升性能的实体。Agent可拥有内在目标（如推断出的子目标，以及对更多观察、更多学习或更多控制的追求——这正是我们需要考虑安全问题的地方！），也可拥有外在目标（体现为指定的奖励**（Reward）**函数或反馈reward信号）。下图展示了RL的主要组成部分。
 
 ![RL ingredients.jpg](../src/RL%20ingredients.jpg)
 
-*Agent*可以是与用户（它的*environment*）交互的多模态神经网络，目标是通过个性化教育赋能用户。*Agent*观察越多，就越容易创建个性化课程来辅助用户。
+Agent可以是与用户（其environment）交互的多模态神经网络，为用户提供个性化教育（目标）。Agent观察越多，就越容易为用户定制个性化的学习方案（课程）。
 
-工业级*LLMs*的*RL*可能涉及数百万次同步交互，使用数十亿参数模型和整个数据中心。这绝非廉价之举！构建在如此庞大规模下高效运行的RL系统(**RL system**)远非易事。在此，我仅提供对这类可扩展分布式系统(**scalable distributed system**)的浅层概述。向Anthropic、DeepMind、DeepSeek、Meta、微软AI、OpenAI、X等公司的杰出工程师们致敬！在我看来，他们就像英超联赛中最优秀的足球运动员一样独特且极具才华。
+工业级LLM的RL可能涉及数百万次并发交互、数十亿参数模型以及整个数据中心。成本高昂！构建能在如此庞大规模下高效运行的RL系统**（RL System）**绝非易事。在此，我仅对这类可扩展的分布式系统**（Scalable Distributed System)**做一浅显概述。向Anthropic、DeepMind、DeepSeek、Meta、Microsoft AI、OpenAI、X等公司的杰出工程师们致敬！在我看来，他们如同英超顶级球员一般独特且才华横溢。
 
-正如我的一些同事所讨论的（参见[《IMPALA: Scalable Distributed Deep-RL》](https://arxiv.org/abs/1802.01561)和[acme: A library of reinforcement learning](https://github.com/google-deepmind/acme)），现代*distributed RL system*可分为两个组件：执行器(**Actor**)和学习器(**Learner**)。每个*actor*通过一个称为策略(**policy**)的网络(**network**)与*environment*交互生成*action*。*Actor* 还从*environment*中收集*reward*和观察结果。收集的数据被添加到共享的回放记忆(**replay memory**)中。 *Learner*从*replay memory*中采样数据并用于更新*policy network*。更新*network*后，权重(**weight**)检查点需要发送给每个*actor*。设计此类系统时，衡量每项操作的持续时间、测量每个通信链路的带宽等至关重要。这需要精确的工程设计和全面的测量与消融研究。
+如我部分同事（参见[《IMPALA: Scalable Distributed Deep-RL》](https://arxiv.org/abs/1802.01561)和[acme: A library of reinforcement learning](https://github.com/google-deepmind/acme)）所述，现代distributed RL system可分为两个部分：Actor和Learner。
+
+每个actor通过一个称为policy的网络**（Network）**与environment交互生成action。Actor还从environment中收集reward和观测结果。收集的数据被添加到公共经验回放池**（Replay Memory）**中。
+
+Learner从replay memory中采样数据并用于更新policy network。更新network后，权重**（Weight）**检查点需要发送给每个actor。设计此类系统时，衡量每项操作的持续时间、测量每个通信链路的带宽等至关重要。这需要精确的工程设计和全面的测量与消融实验**（Ablations）**。
 
 ![modern distributed RL systems.jpg](../src/modern%20distributed%20RL%20systems.jpg)
 
-在语言领域，*actor*是chatbot *agent*，而*environment*则是人类。每次对话的数据随后被发送到*replay memory*中用于学习。通常，*learner*可能需要比*actor*更多的存储和计算资源，因为*learner*需要跟踪梯度(**gradient**)和其他大规模统计数据。
+在语言领域，actor是chatbot agent，而environment则是人。每次对话的数据被送入replay memory中供学习使用。通常，learner比actor需要更多的存储和计算资源，因为learner需要处理梯度Gradient等大规模统计量。
 
-了解*actor*推理成本、通信成本和学习成本非常重要。在某些情况下，这些成本允许*agent*进行同策略(**on-policy**)学习。由于不同*actors*可能以不同速度和时间收集数据，这个过程通常是异步的。
+了解actor推理成本、通信成本和学习成本非常重要。在某些场景下，这些成本允许agent进行在线策略**（On-Policy）**学习。由于不同actor可能以不同速度和时间收集数据，这个过程通常是异步的。
 
-如果数据收集速度不够快，*learner*可能需要从记忆中重放旧示例来更新*policy*。这就是异策略(**off-policy**)设置。在这种情况下，需要纠正模型使用陈旧数据学习的问题——还记得[4月24日推文](2025-04-24_RL%20vs%20SFT.md)中关于驾驶的例子吗？过度脱离*policy*可能很危险！幸运的是，我们稍后将看到研究人员已经有一些解决方案，例如重要性*weight*和其他加权机制，如在[近端策略优化(Proximal Policy Optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中出现的权重。
+如果数据收集速度不够快，learner可能需要重放回放池中的旧样本以更新policy。这就是离线策略**（Off-Policy）**设置。此时必须校正使用陈旧数据学习模型带来的偏差——还记得[4月24日推文](2025-04-24_RL%20vs%20SFT.md)中关于驾驶的例子吗？过度off-policy可能很危险！幸运的是，研究者已有解决方案，例如重要性权重**（Importance Weights）**和其他加权机制，如[近端策略优化(Proximal Policy Optimization, **PPO**)](https://en.wikipedia.org/wiki/Proximal_policy_optimization)和[DeepSeek-R1](https://arxiv.org/abs/2501.12948)论文中采用的权重。
 
-最后，有时可以仅从大型回放数据库学习policy。这被称为离线RL(off-line RL)或批量RL(batch RL)。*Off-line RL*优于*supervised learning*，因为它包含前文讨论的*selection mechanism*，但当然不如*on-line RL*，因为它缺乏在*environment*中直接生成*action*的能力。然而，*off-line RL*非常有用，因为它允许在交互成本过高或危险的情况下进行学习。
+最后，有时仅依靠大型回放数据库即可学习policy。这被称为离线RL**（off-line RL)**或批量RL**（batch RL）**。Off-line RL优于supervised learning，因为它包含前文讨论的selection mechanism，但逊于on-line RL，因其缺乏在environment中直接生成action的能力。然而，在交互成本过高或存在危险的场景中，off-line RL极具实用价值。
 
-顺便说一下，我很乐意解答您可能有的任何问题。您也可以完全不同意我的观点，即使是关于枯燥的技术话题，但所有意见都受欢迎。好像我需要在X上特别声明这一点似的😂
+顺便说一下，欢迎提出任何疑问。即使涉及枯燥的技术话题，也欢迎持完全相反的意见——虽然这话在X平台上实属多余😂

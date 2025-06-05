@@ -4,9 +4,15 @@
 
 许多团队，包括[DeepSeek-R1](https://arxiv.org/abs/2501.12948)，在进行RL时优化以下的一步(one-step)目标函数：
 
+![one-step.jpg](../src/one-step.jpg)
+
 这些数学符号代表以下概念：
 
+![math-symbols.jpg](../src/math-symbols.jpg)
+
 即我们在所有数据字符串(a,o)上对LLM进行微调。我使用积分符号表示文本情况下的大型离散求和。因此，如果我们有一个包含N对观察和行动(o,a)的数据集，我们在实践中会如下评估目标函数：
+
+![objective-function.png](../src/objective-function.png)
 
 在实际应用中，环境(用户)会给我们提供观察(提示或指令o)。所以我们不需要知道分布P(o)。由于我们不知道最优行动(LLM生成内容，即行动a)，我们将对它们进行积分。这是在概率中处理未知量的标准方法。我们对所有可能的值进行加权求和，权重为其出现概率。在这种情况下，行动的概率就是LLM产生的结果。LLM是一个概率模型。
 
@@ -22,17 +28,25 @@
 
 让我们推导一步目标的策略梯度。梯度只是关于每个LLM参数theta的导数向量。理论上，可以使用微积分如下获得：
 
+![policy-gradient.jpg](../src/policy-gradient.jpg)
+
 同样，我们使用大写R表示回报，在这种情况下是一步结果奖励。
 
 如果我们从用户生成(采样)提示o，并使用LLM策略采样解决方案a，在数学上我们表示为：
 
+![solution-a.png](../src/solution-a.png)
+
 我们可以用蒙特卡洛(Monte Carlo)方法近似策略梯度：
+
+![Monte-Carlo.png](../src/Monte-Carlo.png)
 
 现在我们有了梯度，就可以简单地沿着梯度方向来最大化目标函数。Jax和PyTorch等工具使我们能够轻松实现这一点。
 
 
 策略梯度、SFT和自我训练(Self-Training)
 比较RL的策略梯度与监督式微调(supervised fine tuning，最大似然)的梯度很有启发性：
+
+![RL-SFT-Gradient.jpg](../src/RL-SFT-Gradient.jpg)
 
 如我们所见，RL有额外的R^i项，它缩放了对数损失。此外，标签来自LLM模型，而非人类(或GPT4o)数据集。RL能自我提升。R可用于只选择最佳样本，所以模型学会仅模仿好的样本。这就是我所说的RL教师批改作业：它提供一个分数R，告诉我们哪些方面值得模仿，哪些方面不值得模仿。
 
@@ -42,8 +56,12 @@
 PyTorch中的策略梯度
 在PyTorch中，我们通常定义一个"损失"函数，如下所示：
 
+![loss.png](../src/loss.png)
+
 这不是通常监督学习意义上的真正损失，而是一个代理，其梯度给我们提供了更新策略参数的方向(策略梯度)。
 
 这涉及使用自动微分的常规前向和反向传播，如下所示：
+
+![Forward-Backward-Pass.jpg](../src/Forward-Backward-Pass.jpg)
 
 明天我们将看到，我们可以使用最大似然来解决一步目标函数，即无需将其视为RL。然而，新的解释并不会给我们带来太多收益。基本上，你可以有很多解释，但梯度最终是相同的……或多或少如此。

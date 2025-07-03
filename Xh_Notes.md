@@ -33,8 +33,10 @@ graph LR
 
 ## RL基础
 + 视频
-    + https://www.boyuai.com/elites/course/xVqhU42F5IDky94x
-    + B站：动手学强化学习、强化学习的数学原理
+    + https://www.boyuai.com/elites/course/xVqhU42F5IDky94x   （暂不推荐）
+    + B站：动手学强化学习（暂不推荐）、强化学习的数学原理
 + 文本
-    + https://hrl.boyuai.com/
+    + https://hrl.boyuai.com/          （暂不推荐）
     + https://github.com/MathFoundationRL/Book-Mathematical-Foundation-of-Reinforcement-Learning
+
+动手学强化学习，还没开始看，看完再给评价。
